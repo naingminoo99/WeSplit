@@ -36,7 +36,7 @@ struct ContentView: View {
                     .focused($amountIsFocused)
                     Picker("Number of people", selection: $numberOfpeople) {
                         ForEach(2..<13){
-                            Text("\($0) Prople")
+                            Text("\($0) People")
                         }
                     }
                 } // End of First Section
