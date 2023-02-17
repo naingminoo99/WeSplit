@@ -9,33 +9,66 @@ import SwiftUI
 
 struct ContentView: View {
     
-    let occupations = ["Student","Developer","Designer","Manager"]
-    @State private var selectedOcupation = "Student"
-    @State private var tapCount = 0
-    @State private var name = ""
+    let tipPercentages = [10,15,20,25,0]
+    @State private var checkAmount = 0.0
+    @State private var numberOfpeople = 2
+    @State private var tipPercentage = 20
+    @FocusState private var amountIsFocused : Bool
+    
+    var totalPerPerson : Double {
+        let peopleCount = Double(numberOfpeople + 2)
+        let tipSelection = Double(tipPercentage)
+        
+        let tipValue = checkAmount/100 * tipSelection
+        let grandTotal = checkAmount + tipValue
+        let amountPerPerson = grandTotal / peopleCount
+        return amountPerPerson
+    }
     
     var body: some View {
         NavigationView {
             Form {
+                // First Section
                 Section {
-                    Text("Hello, world!")
-                    Text("I am the setting App, world!")
-                }
-                Section {
-                    Text("section, world! \(name)")
-                    Button("Tap Count \(tapCount)") {
-                        tapCount += 1
-                    }
-                }
-                Section {
-                    TextField("Entr Your name", text: $name)
-                    Picker("Select Your Occupation", selection: $selectedOcupation) {
-                        ForEach(occupations, id: \.self){
-                            Text($0)
+                    TextField("Check Amount", value: $checkAmount, format:
+                            .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    .keyboardType(.decimalPad)
+                    .focused($amountIsFocused)
+                    Picker("Number of people", selection: $numberOfpeople) {
+                        ForEach(2..<100){
+                            Text("\($0) Prople")
                         }
                     }
+                } // End of First Section
+                
+                // Second Section
+                Section {
+                    Picker("Tip Percent", selection: $tipPercentage) {
+                        ForEach(tipPercentages, id: \.self) {
+                            Text($0, format:.percent)
+                        }
+                    }
+                    .pickerStyle(.segmented )
+                } header: {
+                    Text("How much Tip you want to leave")
                 }
-            }.navigationTitle("SwiftUI")
+                
+                // Third Section
+                Section {
+                    Text(totalPerPerson, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                } header: {
+                    Text("Total Amount Per Person")
+                }
+            }
+            .navigationTitle("WeSplit")
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done"){
+                        amountIsFocused = false
+                    }
+                }
+            }
         }
     }
 }
